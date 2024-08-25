@@ -42,6 +42,7 @@ router.post("/home",async function(req,res){
   const owner=await ownerModel.findOne({email});
     token=generateToken(owner);
     res.cookie("token",token);
+    
    
     let success  = req.flash("success");
    const products=await productModel.find({})

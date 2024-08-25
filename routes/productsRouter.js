@@ -40,6 +40,11 @@ router.delete("/delete-all", async (req, res) => {
   }
 });
 
+router.get("/removeCart/:pdid", async function (req, res) {
+ console.log(req.user);
+ 
+});
+
 router.get("/decCart/:pdId", async function (req, res) {
   console.log(req.params.pdId);
 
@@ -50,10 +55,9 @@ router.get("/decCart/:pdId", async function (req, res) {
 
     if (product) {
       console.log(product._id, product.name);
-      if(product.quantity<2){
-        product.quantity=1;
-      }
-   else   product.quantity = product.quantity - 1;
+      if (product.quantity < 2) {
+        product.quantity = 1;
+      } else product.quantity = product.quantity - 1;
       await product.save();
       res.redirect("/cart");
     } else {
@@ -74,10 +78,9 @@ router.get("/incCart/:pdId", async function (req, res) {
 
     if (product) {
       console.log(product._id, product.name);
-      if(product.quantity>=10){
-        product.quantity=10;
-      }
-   else   product.quantity = product.quantity + 1;
+      if (product.quantity >= 10) {
+        product.quantity = 10;
+      } else product.quantity = product.quantity + 1;
       await product.save();
       res.redirect("/cart");
     } else {
