@@ -9,9 +9,20 @@ const userSchema=mongoose.Schema({
     },
     email:String,
     password:String,
-    cart:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"product"
+    cart: [{    
+        product: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'product' 
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            default: 1 // or any other default quantity you want
+        },
+        total:{
+            type:Number,
+            default:0
+        }
     }],
     orders:{
         type:Array,

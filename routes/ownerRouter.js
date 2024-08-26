@@ -68,7 +68,7 @@ router.get("/all-products",isLogin,async function(req,res){
 router.get("/Create-new-product",isLogin,async function (req, res) {
   console.log(req.user);
   const owner=await ownerModel.findOne({email:req.user.email});
-  console.log(owner);
+  // console.log(owner);
   
   if(owner){
     let success= req.flash("success");

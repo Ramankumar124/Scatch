@@ -20,23 +20,23 @@ router.get("/addToCart/:id", isLogin, async function (req, res) {
   console.log(req.user);
 
   const user = await userModel.findOne({ email: req.user.email });
-  if (user.cart.indexOf(req.params.id) !== -1) {
+  if (user.cart.findIndex(cartItem=>cartItem.product.equals(req.params.id)) !== -1) {
     req.flash("success","product already added to cart");
     res.redirect('/shop')
   }
   else{
-
-      user.cart.push(req.params.id);
+    
+      user.cart.push({product:req.params.id});
       await user.save();
       req.flash("success", "Added To cart");
       res.redirect("/shop");
-    }
+    } 
 });
 router.get("/cart", isLogin, async function (req, res) {
   const user = await userModel
     .findOne({ email: req.user.email })
-    .populate("cart");
-
+    .populate("cart.product");
+  
   cartTotal(user);
 
   res.render("cart", { user });

@@ -20,11 +20,8 @@ const productSchema=mongoose.Schema({
         type:String,
         default:"#D7C3F1"
     },
-    quantity:{
-        type:Number,
-        default:1
-    },
-    totol:Number,
+    
+    
     image:Buffer
 })
 

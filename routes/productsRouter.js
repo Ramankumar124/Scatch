@@ -6,6 +6,7 @@ const upload = require("../config/multerConfig");
 const ownerModel = require("../models/ownerModel");
 const userModel = require("../models/ownerModel");
 const mongoose = require("mongoose");
+const { isLogin } = require("../middlewares/isLogin");
 router.get("/", function (req, res) {
   res.send("product routes");
 });
@@ -39,26 +40,31 @@ router.delete("/delete-all", async (req, res) => {
     res.status(500).json({ message: "Failed to delete items." });
   }
 });
-
+/*TODO:Solve create the remove cart  */
 router.get("/removeCart/:pdid", async function (req, res) {
- console.log(req.user);
- 
+  console.log(req.user);
+  res.send("Removed from the cart")
 });
 
-router.get("/decCart/:pdId", async function (req, res) {
+router.get("/decCart/:pdId",isLogin, async function (req, res) {
   console.log(req.params.pdId);
 
   const productId = req.params.pdId;
 
   try {
-    const product = await productModel.findById(productId);
+    const user = await userModel.findOne({ email: req.user.email });
 
+    const productIndex = await user.cart.findIndex((cartItem) =>
+      cartItem.product.equals(productId)
+    );
+
+    const product = user.cart[productIndex];
     if (product) {
-      console.log(product._id, product.name);
+      // console.log(product._id, product.name);
       if (product.quantity < 2) {
         product.quantity = 1;
       } else product.quantity = product.quantity - 1;
-      await product.save();
+      await user.save();
       res.redirect("/cart");
     } else {
       res.status(404).send("Product not found");
@@ -68,20 +74,25 @@ router.get("/decCart/:pdId", async function (req, res) {
     res.status(500).send("Internal Server Error");
   }
 });
-router.get("/incCart/:pdId", async function (req, res) {
+router.get("/incCart/:pdId",isLogin, async function (req, res) {
   console.log(req.params.pdId);
 
   const productId = req.params.pdId;
 
   try {
-    const product = await productModel.findById(productId);
+    const user = await userModel.findOne({ email: req.user.email });
 
+    const productIndex = await user.cart.findIndex((cartItem) =>
+      cartItem.product.equals(productId)
+    );
+
+    const product = user.cart[productId];
     if (product) {
-      console.log(product._id, product.name);
-      if (product.quantity >= 10) {
-        product.quantity = 10;
+      // console.log(product._id, product.name);
+      if (product.quantity < 2) {
+        product.quantity = 1;
       } else product.quantity = product.quantity + 1;
-      await product.save();
+      await user.save();
       res.redirect("/cart");
     } else {
       res.status(404).send("Product not found");
