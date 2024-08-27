@@ -4,7 +4,7 @@ const router = express.Router();
 
 const upload = require("../config/multerConfig");
 const ownerModel = require("../models/ownerModel");
-const userModel = require("../models/ownerModel");
+const userModel = require("../models/userModel");
 const mongoose = require("mongoose");
 const { isLogin } = require("../middlewares/isLogin");
 router.get("/", function (req, res) {
@@ -43,27 +43,37 @@ router.delete("/delete-all", async (req, res) => {
 /*TODO:Solve create the remove cart  */
 router.get("/removeCart/:pdid", async function (req, res) {
   console.log(req.user);
-  res.send("Removed from the cart")
+  res.send("Removed from the cart");
 });
+//BUG:increment decrement error
 
-router.get("/decCart/:pdId",isLogin, async function (req, res) {
-  console.log(req.params.pdId);
+router.get("/decCart/:pdId", isLogin, async function (req, res) {
+  console.log("Id from get request", req.params.pdId);
+  console.log(req.user);
 
   const productId = req.params.pdId;
 
   try {
     const user = await userModel.findOne({ email: req.user.email });
 
-    const productIndex = await user.cart.findIndex((cartItem) =>
-      cartItem.product.equals(productId)
+    // Convert productId to a Mongoose ObjectId
+    const productObjectId = new mongoose.Types.ObjectId(productId);
+
+    const productIndex = user.cart.findIndex((cartItem) =>
+      cartItem.product.equals(productObjectId)
     );
 
+    console.log("Product Index", productIndex);
+
     const product = user.cart[productIndex];
+    console.log(product);
+
     if (product) {
-      // console.log(product._id, product.name);
       if (product.quantity < 2) {
         product.quantity = 1;
-      } else product.quantity = product.quantity - 1;
+      } else {
+        product.quantity = product.quantity - 1;
+      }
       await user.save();
       res.redirect("/cart");
     } else {
@@ -74,24 +84,28 @@ router.get("/decCart/:pdId",isLogin, async function (req, res) {
     res.status(500).send("Internal Server Error");
   }
 });
-router.get("/incCart/:pdId",isLogin, async function (req, res) {
-  console.log(req.params.pdId);
+router.get("/incCart/:pdId", isLogin, async function (req, res) {
+  console.log("Id from get request", req.params.pdId);
+  console.log(req.user);
 
   const productId = req.params.pdId;
 
   try {
     const user = await userModel.findOne({ email: req.user.email });
 
-    const productIndex = await user.cart.findIndex((cartItem) =>
-      cartItem.product.equals(productId)
+    // Convert productId to a Mongoose ObjectId
+    const productObjectId = new mongoose.Types.ObjectId(productId);
+
+    const productIndex = user.cart.findIndex((cartItem) =>
+      cartItem.product.equals(productObjectId)
     );
 
-    const product = user.cart[productId];
+    console.log("Product Index", productIndex);
+
+    const product = user.cart[productIndex];
     if (product) {
-      // console.log(product._id, product.name);
-      if (product.quantity < 2) {
-        product.quantity = 1;
-      } else product.quantity = product.quantity + 1;
+      product.quantity = product.quantity + 1;
+
       await user.save();
       res.redirect("/cart");
     } else {
