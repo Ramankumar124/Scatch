@@ -48,5 +48,13 @@ router.get("/logout", isLogin, function (req, res) {
 router.get("/adminLogin", function (req, res) {
   res.render("owner-login");
 });
-
+router.get('/account', async (req, res) => {
+  try {
+      const user = await userModel.findById(req.user.id).populate('cart.product'); // Assuming user is logged in and req.user contains user info
+      res.render('my-account', { user });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
+  }
+});
 module.exports = router;
