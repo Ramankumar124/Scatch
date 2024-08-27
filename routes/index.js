@@ -48,6 +48,7 @@ router.get("/logout", isLogin, function (req, res) {
 router.get("/adminLogin", function (req, res) {
   res.render("owner-login");
 });
+//TODO: create account route
 router.get('/account', async (req, res) => {
   try {
       const user = await userModel.findById(req.user.id).populate('cart.product'); // Assuming user is logged in and req.user contains user info
