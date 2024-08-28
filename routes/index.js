@@ -4,7 +4,7 @@ const productModel = require("../models/productModel");
 const userModel = require("../models/userModel");
 const { cartTotal } = require("../utils/cartTotal");
 const router = express.Router();
-
+const jwt=require('jsonwebtoken')
 
 router.get("/", function (req, res) {
   let error = req.flash("error");
@@ -49,10 +49,25 @@ router.get("/logout", isLogin, function (req, res) {
 router.get("/adminLogin", function (req, res) {
   res.render("owner-login");
 });
-//TODO: create account route
+
+
+
+
+router.get('/my-account',isLogin,async(req,res)=>{
+  let decoded=   jwt.verify(req.cookies.token,process.env.JWT_KEY)
+  let   user=decoded.usertype;
+
+    if(user=="Owner"){
+      
+      res.redirect("/owner/Create-new-product");
+    }
+    else res.redirect("/account");
+})
 router.get('/account',isLogin, async (req, res) => {
   try {
-      const user = await userModel.findById(req.user.id).populate('cart.product'); // Assuming user is logged in and req.user contains user info
+      const user = await userModel.findById(req.user.id).populate('cart.product'); // Assuming user is logged in and req.user contains user info]
+      console.log(user);
+      
       res.render('my-account', { user });
   } catch (error) {
       console.error(error);

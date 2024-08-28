@@ -23,9 +23,14 @@ module.exports.registerUser= async function (req, res) {
                     fullName,
                     password: hash,
                 });
-                let token=  generateToken(user)
-                res.cookie("token", token);
+                user.usertype="user";
+                await user.save();
+
+                let token=  generateToken(user);
                 console.log(token);
+                
+                res.cookie("token", token);
+              
                 
                 res.send("user created succesfully");
             });
@@ -41,9 +46,15 @@ module.exports.loginUser=async function(req,res){
     let user=await userModel.findOne({email});
 
     if(user){
-      bcrypt.compare(password,user.password,function(err,result){
+      bcrypt.compare(password,user.password,async function(err,result){
         if(result){
+            user.usertype="user";
+            await user.save();
+          
+            
             let token=generateToken(user);
+            console.log(token);
+            
             res.cookie("token",token);
             res.redirect("/shop");
             }

@@ -22,7 +22,8 @@ const userSchema=mongoose.Schema({
         total:{
             type:Number,
             default:0
-        }
+        },
+            
     }],
     orders:{
         type:Array,
@@ -30,7 +31,8 @@ const userSchema=mongoose.Schema({
     },
 
     contact:Number,
-    picture:String
+    picture:String,
+    
 })
 
 const userModel=mongoose.model("user",userSchema);
