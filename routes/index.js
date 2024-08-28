@@ -5,6 +5,7 @@ const userModel = require("../models/userModel");
 const { cartTotal } = require("../utils/cartTotal");
 const router = express.Router();
 
+
 router.get("/", function (req, res) {
   let error = req.flash("error");
  
@@ -38,8 +39,8 @@ router.get("/cart", isLogin, async function (req, res) {
     .populate("cart.product");
   
   cartTotal(user);
-
-  res.render("cart", { user });
+ const success=req.flash("success");
+  res.render("cart", { user,success });
 });
 router.get("/logout", isLogin, function (req, res) {
   res.cookie("token", "");
@@ -49,7 +50,7 @@ router.get("/adminLogin", function (req, res) {
   res.render("owner-login");
 });
 //TODO: create account route
-router.get('/account', async (req, res) => {
+router.get('/account',isLogin, async (req, res) => {
   try {
       const user = await userModel.findById(req.user.id).populate('cart.product'); // Assuming user is logged in and req.user contains user info
       res.render('my-account', { user });
