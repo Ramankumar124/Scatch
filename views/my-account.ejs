@@ -6,7 +6,25 @@
         <!-- User Information -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
             <div class="flex items-center mb-4">
-                <img src="<%= user.picture %>" alt="Profile Picture" class="w-24 h-24 rounded-full bg-gray-100 mr-4">
+                <% if (user.picture) { %>
+                    <!-- Display the user's profile picture if available -->
+              
+                    <img src="data:image/jpeg;base64,<%= user.picture %>" alt="Profile Picture" class="w-24 h-24 rounded-full bg-gray-100 mr-4">
+                <% } else { %>
+                    <!-- Display a circular input for adding a profile picture -->
+                    <div class="relative w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mr-4 overflow-hidden">
+                        <!-- Using a form to handle the file upload -->
+                        <form action="/upload-image" method="POST" enctype="multipart/form-data" class="absolute inset-0 flex items-center justify-center">
+                            <label for="file-upload" class="cursor-pointer flex items-center justify-center w-full h-full">
+                                <!-- Add an icon for better UX -->
+                                <i class="ri-add-circle-line text-gray-500 text-4xl"></i>
+                                <p>Add</p>
+                                <!-- Hidden file input -->
+                                <input id="file-upload" name="picture" type="file" class="hidden" accept="image/*" onchange="this.form.submit()">
+                            </label>
+                        </form>
+                    </div>
+                <% } %>
                 <div>
                     <h2 class="text-xl font-semibold"><%= user.fullName %></h2>
                     <p class="text-gray-600"><%= user.email %></p>

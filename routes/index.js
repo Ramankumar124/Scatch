@@ -4,7 +4,8 @@ const productModel = require("../models/productModel");
 const userModel = require("../models/userModel");
 const { cartTotal } = require("../utils/cartTotal");
 const router = express.Router();
-const jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken');
+const upload = require("../config/multerConfig");
 
 router.get("/", function (req, res) {
   let error = req.flash("error");
@@ -74,4 +75,16 @@ router.get('/account',isLogin, async (req, res) => {
       res.status(500).send('Server Error');
   }
 });
+router.post('/upload-image',upload.single("picture"),isLogin,async function(req,res){
+console.log("user is ",req.body);
+console.log("file is here",req.file);
+
+const user=await userModel.findOneAndUpdate({email:req.user.email},{
+
+  picture:req.file.buffer.toString('base64')
+});
+
+
+  res.redirect("/account");
+})
 module.exports = router;
