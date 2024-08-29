@@ -8,9 +8,17 @@ const jwt=require('jsonwebtoken');
 const upload = require("../config/multerConfig");
 
 router.get("/", function (req, res) {
-  let error = req.flash("error");
+  if (req.cookies.token) {
+    // Redirect to the shop page if the cookie is present
+    res.redirect("/shop");
+  }
+  else{
+    let error = req.flash("error");
+    
  
-  res.render("index", { error, loggedin: false });
+    res.render("index", { error, loggedin: false });
+  }
+
 });
 
 router.get("/shop", isLogin, async function (req, res) {
@@ -76,15 +84,26 @@ router.get('/account',isLogin, async (req, res) => {
   }
 });
 router.post('/upload-image',upload.single("picture"),isLogin,async function(req,res){
-console.log("user is ",req.body);
-console.log("file is here",req.file);
-
 const user=await userModel.findOneAndUpdate({email:req.user.email},{
-
   picture:req.file.buffer.toString('base64')
 });
-
-
   res.redirect("/account");
+})
+
+router.post('/add-contact',isLogin,async function(req,res){
+   const {contact}=req.body;
+   console.log(contact);
+   
+  
+  try {
+    const user=await userModel.findOneAndUpdate({email:req.user.email},{
+      contact:contact
+    });
+     res.redirect("/account");
+  
+  } catch (error) {
+    res.send(error.message);
+  }
+
 })
 module.exports = router;

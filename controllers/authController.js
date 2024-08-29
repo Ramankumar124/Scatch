@@ -31,8 +31,8 @@ module.exports.registerUser= async function (req, res) {
                 
                 res.cookie("token", token);
               
-                
-                res.send("user created succesfully");
+                req.flash("success","user created Succesfully please login");
+                res.redirect("/");
             });
         });
     }
