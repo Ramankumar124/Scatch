@@ -41,69 +41,65 @@ router.delete("/delete-all", async (req, res) => {
   }
 });
 
-router.get("/removeCart/:pdid",isLogin ,async function (req, res) {
+router.get("/removeCart/:pdid", isLogin, async function (req, res) {
   console.log(req.params.pdid);
-  
+
   console.log(req.user);
   const productId = req.params.pdid;
   try {
     const user = await userModel.findOne({ email: req.user.email });
     const productObjectId = new mongoose.Types.ObjectId(productId);
-    const prodductIndex=user.cart.findIndex(cartItem=>cartItem.product.equals(productObjectId));
-     
-  user.cart.splice(prodductIndex,1);
-  await user.save();
-  res.redirect("/cart");
-  // res.send("removed");
+    const prodductIndex = user.cart.findIndex((cartItem) =>
+      cartItem.product.equals(productObjectId)
+    );
+
+    user.cart.splice(prodductIndex, 1);
+    await user.save();
+    res.redirect("/cart");
+    // res.send("removed");
   } catch (error) {
     res.send(error.message);
-
   }
-// or good method 
-// const productId = req.params.pdid;
+  // or good method
+  // const productId = req.params.pdid;
 
-// try {
-//   // Convert the product ID from the URL into a MongoDB ObjectId
-//   const productObjectId = new mongoose.Types.ObjectId(productId);
+  // try {
+  //   // Convert the product ID from the URL into a MongoDB ObjectId
+  //   const productObjectId = new mongoose.Types.ObjectId(productId);
 
-//   // Update the user document to remove the item from the cart
-//   await userModel.updateOne(
-//     { email: req.user.email }, // Find the user by email
-//     { $pull: { cart: { product: productObjectId } } } // Remove item from cart array
-//   );
+  //   // Update the user document to remove the item from the cart
+  //   await userModel.updateOne(
+  //     { email: req.user.email }, // Find the user by email
+  //     { $pull: { cart: { product: productObjectId } } } // Remove item from cart array
+  //   );
 
-//   // Redirect to the cart page or send a response
-//   res.redirect("/cart");
-// } catch (error) {
-//   // Handle any errors that occur
-//   res.send(error.message);
-// }
+  //   // Redirect to the cart page or send a response
+  //   res.redirect("/cart");
+  // } catch (error) {
+  //   // Handle any errors that occur
+  //   res.send(error.message);
+  // }
 });
 router.get("/buy/:pdid", isLogin, async function (req, res) {
   try {
     const productObjectId = new mongoose.Types.ObjectId(req.params.pdid);
-    const user=await userModel.findOne({email:req.user.email});
+    const user = await userModel.findOne({ email: req.user.email });
     const productIndex = user.cart.findIndex((cartItem) =>
       cartItem.product.equals(productObjectId)
     );
-     user.orders.push(user.cart[productIndex]);
+    user.orders.push(user.cart[productIndex]);
     await user.save();
-    req.flash("success","Order Placed")
+    req.flash("success", "Order Placed");
     // console.log(user);
     console.log(req.params.pdid);
-    
+
     res.redirect(`/products/removeCart/${req.params.pdid}`);
-    
-   
   } catch (error) {
     console.log(error);
-    req.flash("error","unable to place order");
+    req.flash("error", "unable to place order");
     res.send(error);
-    
   }
-
-    
-})
+});
 
 router.get("/decCart/:pdId", isLogin, async function (req, res) {
   console.log("Id from get request", req.params.pdId);
@@ -172,6 +168,16 @@ router.get("/incCart/:pdId", isLogin, async function (req, res) {
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).send("Internal Server Error");
+  }
+});
+router.get("/deleteproduct/:pdid", async function (req, res) {
+  try {
+  
+  const product=await productModel.findOneAndDelete({_id:req.params.pdid});
+  req.flash("success",`Deleted the ${product.name}`);
+  res.redirect("/shop");
+  } catch (error) {
+   res.send(error.message);
   }
 });
 module.exports = router;

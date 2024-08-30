@@ -33,7 +33,9 @@
                                 <h4>₹ <%= product.price %>
                                 </h4>
                             </div>
-                           
+                            <a class="w-7 h-7 flex text-lg items-center justify-center rounded-full bg-white " href="/products/deleteproduct/<%= product._id%>">
+                                <i  class="ri-delete-bin-fill"></i>
+                            </a>
                         </div>
                     </div>
                     <% }) %>
